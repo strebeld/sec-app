@@ -54,7 +54,7 @@ jobs:
         uses: 'google-github-actions/auth@v2'
         with:
           token_format: 'access_token'
-          project_id: lgcporg10-170
+          project_id: clgcporg10-170
           service_account: ${{ secrets.GCP_SA }}
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_ID }}
 
