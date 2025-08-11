@@ -49,6 +49,23 @@ jobs:
         with:
           sarif_file: trivy-results.sarif
 
+      - name: Google Auth
+        id: auth
+        uses: 'google-github-actions/auth@v2'
+        with:
+          token_format: 'access_token'
+          project_id: lgcporg10-170
+          service_account: ${{ secrets.GCP_SA }}
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_ID }}
+
+      - name: Docker Auth
+        id: docker-auth
+        uses: 'docker/login-action@v1'
+        with:
+          username: 'oauth2accesstoken'
+          password: '${{ steps.auth.outputs.access_token }}'
+          registry: 'us-central1-docker.pkg.dev'
+
       - name: Push Docker image to GCR
         run: |
           docker push gcr.io/clgcporg10-170/sec-app:${{ github.sha }}
