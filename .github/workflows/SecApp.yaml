@@ -58,9 +58,14 @@ jobs:
           registry: 'us-central1-docker.pkg.dev'
 
       - name: Push Docker image to GCR-1
+        env:
+          PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
         run: |   
-          docker build -t us-central1-docker.pkg.dev/clgcporg10-170/sec-app:${{ github.sha }} ./app/sec-app
-          docker push us-central1-docker.pkg.dev/clgcporg10-170/sec-app:${{ github.sha }}
+         IMAGE=us-central1-docker.pkg.dev/$PROJECT_ID/my-app/app:${{ github.sha }}
+         docker build -t "$IMAGE" ./app/sec-app
+         docker push "$IMAGE" 
+          ### docker build -t us-central1-docker.pkg.dev/clgcporg10-170/sec-app:${{ github.sha }} ./app/sec-app
+          ####docker push us-central1-docker.pkg.dev/clgcporg10-170/sec-app:${{ github.sha }}
 
       - name: Update Kustmize image tag
         run: |
