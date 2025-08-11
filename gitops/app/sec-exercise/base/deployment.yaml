@@ -1,0 +1,32 @@
+apiVersion: v1
+namespace: sec-app
+metadata:
+  name: sec-app
+  labels:
+    app: sec-app
+---
+apiVersion: apps/v1
+kind: Deployment
+namespace: sec-app
+metadata:
+  name: sec-app
+  labels:
+    app: sec-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sec-app
+  template:
+    metadata:
+      labels:
+        app: sec-app
+    spec:
+      containers:
+        - name: sec-app
+          image: <YOUR_IMAGE_NAME>:<TAG>
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+               value: production
