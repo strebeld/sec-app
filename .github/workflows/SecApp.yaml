@@ -70,7 +70,7 @@ jobs:
         run: |
           docker push gcr.io/clgcporg10-170/sec-app:${{ github.sha }}
 
-      - name: Update Kustomize image tag
+      - name: Update Kustmize image tag
         run: |
           cd gitops
           curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
