@@ -1,0 +1,67 @@
+name: Build, Scan, Push to GCR, Update Kustomize image tag
+
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: read
+  id-token: 'write'
+
+jobs:
+  build-scan-push-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_ID }}
+          service_account: ${{ secrets.GCP_SA }}
+
+      - name: Configure Docker for GCR
+        run: gcloud auth configure-docker gcr.io --quiet
+
+      - name: Build Docker image
+        run: |
+          docker build -t gcr.io/111111/sec-app:latest ./app/sec-app
+      - name: Trivy scan (HIGH/CRITICAL fail)
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          scan-type: 'image'
+          image-ref: 'gcr.io/111111/sec-app:latest'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'HIGH,CRITICAL'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          exit-code: '0'  
+
+      - name: Upload Trivy results to GitHub Security
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+
+
+      - name: Scan Docker image
+        run: |
+          trivy image --exit-code 0 --severity HIGH,CRITICAL $IMAGE_NAME:$GIT_SHA
+      - name: Push Docker image to GCR
+        run: |
+          docker push $IMAGE_NAME:$GIT_SHA
+
+      - name: Update Kustomize image tag
+        run: |
+          cd gitops
+          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+          ./kustomize edit set image my-app=$IMAGE_NAME:$GIT_SHA
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git commit -am "Update image to $IMAGE_NAME:$GIT_SHA"
+          git push
