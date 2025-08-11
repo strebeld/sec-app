@@ -64,15 +64,3 @@ jobs:
          IMAGE=us-central1-docker.pkg.dev/$PROJECT_ID/sec-app/app:${{ github.sha }}
          docker build -t "$IMAGE" ./app/sec-app
          docker push "$IMAGE" 
-          ### docker build -t us-central1-docker.pkg.dev/clgcporg10-170/sec-app:${{ github.sha }} ./app/sec-app
-          ####docker push us-central1-docker.pkg.dev/clgcporg10-170/sec-app:${{ github.sha }}
-
-      - name: Update Kustmize image tag
-        run: |
-          cd gitops
-          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
-          ./kustomize edit set image my-app=$IMAGE_NAME:$GIT_SHA
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git commit -am "Update image to $IMAGE_NAME:$GIT_SHA"
-          git push
