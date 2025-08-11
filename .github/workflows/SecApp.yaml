@@ -31,12 +31,12 @@ jobs:
       - name: Build Docker image
         run: |
           COMMIT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
-          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/sec-app:l$COMMIT_SHA ./app/sec-app
+          docker build -t gcr.io/clgcporg10-170/sec-app:l$COMMIT_SHA ./app/sec-app
       - name: Trivy scan (HIGH/CRITICAL fail)
         uses: aquasecurity/trivy-action@0.24.0
         with:
           scan-type: 'image'
-          image-ref: 'gcr.io/${{ secrets.GCP_PROJECT_ID }}/sec-app:$COMMIT_SHA'
+          image-ref: 'gcr.io/clgcporg10-170/sec-app:$COMMIT_SHA'
           format: 'sarif'
           output: 'trivy-results.sarif'
           severity: 'HIGH,CRITICAL'
@@ -52,7 +52,7 @@ jobs:
 
       - name: Push Docker image to GCR
         run: |
-          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/sec-app:$COMMIT_SHA
+          docker push gcr.io/clgcporg10-170/sec-app:$COMMIT_SHA
 
       - name: Update Kustomize image tag
         run: |
