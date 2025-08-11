@@ -10,11 +10,6 @@ variable "region" {
   default     = "us-central1"
 }
 
-variable "authorized_ip_range" {
-  description = "CIDR block for accessing the GKE control plane (e.g., your workstation IP)."
-  type        = string
-}
-
 variable "gke_cluster_name" {
   description = "Name of the GKE cluster."
   type        = string
