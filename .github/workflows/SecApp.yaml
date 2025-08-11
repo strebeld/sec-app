@@ -68,6 +68,7 @@ jobs:
 
       - name: Push Docker image to GCR
         run: |
+          docker build -t
           docker push us-central1-docker.pkg.dev/clgcporg10-170/sec-app:${{ github.sha }}
 
       - name: Update Kustmize image tag
