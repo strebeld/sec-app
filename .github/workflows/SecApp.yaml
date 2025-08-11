@@ -37,7 +37,7 @@ jobs:
         with:
           scan-type: 'image'
           image-ref: 'gcr.io/${{ secrets.GCP_PROJECT_ID }}/sec-app:$COMMIT_SHA'
-          format: 'sarif
+          format: 'sarif'
           output: 'trivy-results.sarif'
           severity: 'HIGH,CRITICAL'
           ignore-unfixed: true
