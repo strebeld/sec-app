@@ -61,7 +61,7 @@ jobs:
         env:
           PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
         run: |   
-         IMAGE=us-central1-docker.pkg.dev/$PROJECT_ID/my-app/app:${{ github.sha }}
+         IMAGE=us-central1-docker.pkg.dev/$PROJECT_ID/sec-app/app:${{ github.sha }}
          docker build -t "$IMAGE" ./app/sec-app
          docker push "$IMAGE" 
           ### docker build -t us-central1-docker.pkg.dev/clgcporg10-170/sec-app:${{ github.sha }} ./app/sec-app
