@@ -30,3 +30,39 @@ spec:
           env:
             - name: NODE_ENV
                value: production
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: myapp }
+  template:
+    metadata:
+      labels: { app: myapp }
+    spec:
+      containers:
+        - name: myapp
+          image: your-registry/myapp:latest
+          env:
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-credentials
+                  key: MONGODB_URI
+          volumeMounts:
+            - name: mongodb-ca
+              mountPath: /etc/ssl/mongo
+              readOnly: true
+          # If your driver needs an explicit CA path, add an env var like:
+            # - name: SSL_CA_CERT
+            #   value: /etc/ssl/mongo/ca.crt
+      volumes:
+        - name: mongodb-ca
+          secret:
+            secretName: mongodb-ca
+            optional: true
