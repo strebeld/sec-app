@@ -40,6 +40,7 @@ resource "google_compute_router_nat" "gke_nat" {
   name                               = "gke-nat-gateway"
   router                             = google_compute_router.gke_router.name
   region                             = google_compute_router.gke_router.region
+  nat_ip_allocate_option             = "AUTO_ONLY"
   source_subnetwork_ip_ranges_to_nat = "LIST_OF_SUBNETWORKS"
   log_config {
     enable = true
@@ -94,9 +95,15 @@ resource "google_container_cluster" "secure_gke_cluster" {
   # Make the cluster private
   private_cluster_config {
     enable_private_nodes    = true
-    enable_private_endpoint = true
+    enable_private_endpoint = false
     master_ipv4_cidr_block  = "172.16.0.0/28"
   }
+
+  # Restrict control plane IP
+  #    cidr_block   = var.authorized_ip_range
+  #    display_name = "My-Workstation"
+   # }
+  #}
 
   # IP Allocation
   ip_allocation_policy {
@@ -131,7 +138,6 @@ resource "google_container_cluster" "secure_gke_cluster" {
       issue_client_certificate = false
     }
   }
-
 }
 
 # Node Pool config
