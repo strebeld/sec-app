@@ -1,7 +1,6 @@
 provider "google" {
   project = "var.project_id" 
   region  = "var.region"
-  credentials = file("~/gcpkey/gke-project-467402-f5893750ef0c.json")
   zone    = "us-central1-a"
 }
 
