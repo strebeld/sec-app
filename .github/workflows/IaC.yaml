@@ -20,7 +20,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Terraforms
+      - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
