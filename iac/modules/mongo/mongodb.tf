@@ -33,6 +33,7 @@ resource "google_compute_subnetwork" "mongo_subnet" {
   ip_cidr_range = "10.10.100.0/24"
   region        = var.region
   network       = google_compute_network.mongo_vpc.id
+}
 
 resource "google_compute_instance" "mongodb_vm" {
   name         = "mongodb-vm"
