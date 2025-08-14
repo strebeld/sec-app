@@ -87,6 +87,10 @@ resource "google_container_cluster" "secure_gke_cluster" {
   network                  = google_compute_network.gke_vpc.id
   subnetwork               = google_compute_subnetwork.gke_subnet.id
 
+  binary_authorization {
+    evaluation_mode = "PROJECT_SINGLETON_POLICY_ENFORCE"
+  }
+
   # Use a stable release channel for automatic security patches and upgrades
   release_channel {
     channel = "STABLE"
@@ -97,7 +101,7 @@ resource "google_container_cluster" "secure_gke_cluster" {
     enable_private_nodes    = true
     enable_private_endpoint = false
     master_ipv4_cidr_block  = "172.16.0.0/28"
-  }
+  } 
 
   # Restrict control plane IP
   #    cidr_block   = var.authorized_ip_range
@@ -111,16 +115,22 @@ resource "google_container_cluster" "secure_gke_cluster" {
     services_secondary_range_name = google_compute_subnetwork.gke_subnet.secondary_ip_range[1].range_name
   }
 
-  # Enable Workload Identity 
+  # Enable Workload Identity
   workload_identity_config {
     workload_pool = "${var.project_id}.svc.id.goog"
   }
 
-  # Enable Network Policy
-  network_policy {
-    enabled  = true
-    provider = "CALICO"
+  secret_manager_config { enabled = true }
+
+  # Enable Secrets Manager add-on
+  addons_config {
+    gke_backup_agent_config {
+      enabled = false
+    }
   }
+
+  # Enable Dataplane V2
+  datapath_provider = "ADVANCED_DATAPATH"
 
   # Enable Shielded Nodes
   enable_shielded_nodes = true

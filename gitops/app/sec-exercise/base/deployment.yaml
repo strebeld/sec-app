@@ -1,16 +1,25 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sec-app
+  labels:
+    name: sec-app
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: "your-team-namespace"
-  name: "test-app"
+  namespace: sec-app
+  name: "sec-app"
 spec:
   selector:
     matchLabels:
-      app: "test-app"
+      app: "sec-app"
   template:
     metadata:
-      name: "test-app"
+      name: "sec-app"
     spec:
       containers:
-        - name: "test-app"
-          image: "app-image" # The value "app-image" references "app-image" in kustomize.yaml
+        - name: "sec-app"
+          image: "app-image"
+      serviceAccountName: "sec-app-sa"

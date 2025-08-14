@@ -22,6 +22,18 @@ resource "random_id" "bucket_id" {
   byte_length = 4
 }
 
+resource "google_compute_network" "mongo_vpc" {
+  name                    = "mongo-public-vpc"
+  auto_create_subnetworks = false
+}
+
+# Subnet for Cluster
+resource "google_compute_subnetwork" "mongo_subnet" {
+  name          = "mongo-subnet"
+  ip_cidr_range = "10.10.100.0/24"
+  region        = var.region
+  network       = google_compute_network.mongo_vpc.id
+
 resource "google_compute_instance" "mongodb_vm" {
   name         = "mongodb-vm"
   machine_type = "e2-medium"
@@ -37,7 +49,7 @@ resource "google_compute_instance" "mongodb_vm" {
   }
 
   network_interface {
-    network       = "default"
+    network       = "mongo-public-vpc"
     access_config {}
   }
 
