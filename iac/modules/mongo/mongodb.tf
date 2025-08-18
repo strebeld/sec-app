@@ -50,7 +50,7 @@ resource "google_compute_instance" "mongodb_vm" {
   }
 
   network_interface {
-    network       = "mongo-subnet"
+    network       = "mongo_subnet"
     access_config {}
   }
 
