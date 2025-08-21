@@ -1,0 +1,47 @@
+name: trivy-k8s-config-scan
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  security-events: write   # needed to upload SARIF
+
+jobs:
+  trivy-config:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target:
+          - path: k8s/manifests           # plain YAML
+          - path: helm/myapp              # Helm chart dir
+          - path: kustomize/overlays/prod # Kustomize overlay
+    steps:
+      - uses: actions/checkout@v4
+
+      # Install Trivy CLI
+      - name: Install Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          version: latest
+
+      # Run Trivy config scan (K8s/Helm/Kustomize YAML)
+      - name: Trivy config scan (Kubernetes/IaC)
+        run: |
+          set -e
+          TARGET="${{ matrix.target.path }}"
+          # Pick rendered file when we created one; otherwise use the path
+          INPUT=$( [ -f ./gitops/app/base/k8s/deployment.yaml ] && echo deployment.yaml || echo "$TARGET" )
+          trivy config \
+            --severity HIGH,CRITICAL \
+            --exit-code 0 \
+            --format sarif \
+            --output trivy-${{ matrix.target.path//\//- }}.sarif \
+            "$INPUT"
+
+      - name: Upload SARIF to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-${{ matrix.target.path//\//- }}.sarif
