@@ -1,0 +1,29 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: todo-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: todos
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    image: node:18
+    container_name: todoapp
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: sh -c "npm install && node server.js"
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/todos
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+
+volumes:
+  mongo-data:
