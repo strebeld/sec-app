@@ -19,7 +19,7 @@ spec:
       serviceAccountName: sec-app-sa
       containers:
         - name: web
-          image: us-central1-docker.pkg.dev/clgcporg10-170/sec-app/todo:v2
+          image: us-central1-docker.pkg.dev/clgcporg10-170/sec-app/app:822a2d711bfabf149c236bed1fdf73525de41749
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
