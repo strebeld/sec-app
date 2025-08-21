@@ -1,16 +1,18 @@
 FROM --platform=linux/amd64 node:current-alpine3.22
 
-# Create app directory
 WORKDIR /app
 
-# Install dependencies first (better layer caching)
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
 COPY package*.json ./
 RUN npm install --omit=dev
 
-# Copy the rest of the source
 COPY . .
 
-# Environment
+RUN chown -R appuser:appgroup /app
+
+USER appuser
+
 ENV NODE_ENV=production
 ENV PORT=3000
 
