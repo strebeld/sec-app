@@ -20,11 +20,6 @@ spec:
           protocol: UDP
     - to:
         - ipBlock:
-            cidr: 34.46.68.87/24
-      ports:
-        - port: 27017
-    - to:
-        - ipBlock:
             cidr: 10.10.100.0/24
       ports:
         - port: 27017
